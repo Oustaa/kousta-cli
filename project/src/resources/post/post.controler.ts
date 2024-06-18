@@ -1,10 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import Controller from '@/utils/interfaces/Controler.interface';
-import HttpException from '@/utils/exceptions/http.exception';
-import validationMiddleware from '@/middleware/validation.middleware';
-import validate from '@/resources/post/post.validation';
-import responseHandler from '@/utils/ResponseHandler';
-import PostModel from '@/resources/post/post.model';
+import Controller from '../../utils/interfaces/Controler.interface';
+import HttpException from '../../utils/exceptions/http.exception';
+import validationMiddleware from '../../middleware/validation.middleware';
+import validate from './post.validation';
+import responseHandler from '../../utils/ResponseHandler';
+import PostModel from './post.model';
 
 class PostController implements Controller {
   private post = PostModel;

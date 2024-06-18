@@ -5,9 +5,9 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 
-import Controller from '@/utils/interfaces/Controler.interface';
-import ErrorMiddleware from '@/middleware/error.middleware';
-import logger from '@/utils/Logger';
+import Controller from './utils/interfaces/Controler.interface';
+import ErrorMiddleware from './middleware/error.middleware';
+import logger from './utils/Logger';
 
 export default class APP {
   private static instance: APP;

@@ -2,9 +2,9 @@ import 'dotenv/config';
 import 'module-alias/register';
 import http from 'node:http';
 import APP from './app';
-import validateEnv from '@/utils/validateEnv';
+import validateEnv from './utils/validateEnv';
 import PostController from './resources/post/post.controler';
-import logger from '@/utils/Logger';
+import logger from './utils/Logger';
 
 validateEnv();
 
