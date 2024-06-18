@@ -22,7 +22,9 @@
     "joi": "^17.13.1",
     "module-alias": "^2.2.3",
     "mongoose": "^8.4.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "winston": "^3.13.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@types/compression": "^1.7.5",
