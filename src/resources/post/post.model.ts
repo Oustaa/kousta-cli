@@ -1,5 +1,9 @@
-import { Schema, model } from "mongoose";
-import Post from "@/resources/post/post.interface";
+import { Schema, model, Document } from 'mongoose';
+
+export interface PostInterface extends Document {
+  title: string;
+  body: string;
+}
 
 const PostSchema = new Schema(
   {
@@ -16,4 +20,5 @@ const PostSchema = new Schema(
     timestamps: true,
   },
 );
-export default model<Post>("Post", PostSchema);
+
+export default model<PostInterface>('Post', PostSchema);
