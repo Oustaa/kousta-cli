@@ -2,38 +2,33 @@
 
 import { program } from "commander";
 import chalk from "chalk";
-import inquirer from "inquirer";
 import figlet from "figlet";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { createSpinner } from "nanospinner";
+import { readFileSync, existsSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 
-const packageJsonPath = join(process.env.PWD, "package.json");
-const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+import { askQuestion } from "./utils/ask.js";
+import { initializeProject } from "./utils/initProject.js";
 
-const askQuestion = async ({
-  type,
-  message,
-  defaultValue,
-  choices,
-  validate,
-}) => {
-  const answer = await inquirer.prompt({
-    name: "answer",
-    type,
-    message,
-    choices,
-    validate,
-    default() {
-      return defaultValue;
-    },
-  });
+// Get the current directory of the script
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-  return answer.answer;
-};
+// Try to read the package.json file
+let packageJson;
+try {
+  const packageJsonPath = join(__dirname, "package.json");
+  if (!existsSync(packageJsonPath)) {
+    throw new Error(`package.json not found at ${packageJsonPath}`);
+  }
+  packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+} catch (error) {
+  console.error("Failed to read package.json:", error.message);
+  process.exit(1);
+}
 
-async function createProject(options) {
-  const argv = process.argv;
-  let projectName = argv[argv.indexOf("create-project") + 1];
+async function createProject(projectName, options) {
   let dbType = options.database;
   let withAuth = options.authentication;
 
@@ -62,10 +57,16 @@ async function createProject(options) {
     });
   }
 
-  console.log(`Project Name: ${projectName}`);
-  console.log(`Database Type: ${dbType}`);
-  console.log(`With Authentication: ${withAuth}`);
-  // Further code to initialize the project
+  const spinner = createSpinner("Initializing project folder...").start();
+
+  initializeProject(
+    {
+      projectName,
+      dbType,
+      withAuth,
+    },
+    spinner.success
+  );
 }
 
 async function makeResource() {
@@ -96,20 +97,16 @@ figlet("Kousta CLI", (err, data) => {
   program
     .command("create-project [project-name]")
     .description("Create a new project with specified options")
-    .option(
-      "-db, --database <type>",
-      "Add database support (mongodb or mysql)",
-      "mongodb"
-    )
+    .option("-db, --database <type>", "Add database support (mongodb or mysql)")
     .option("-auth, --authentication", "Add authentication support")
-    .action(createProject)
+    .action((projectName, options) => createProject(projectName, options))
     .on("--help", () => {
       console.log("\nExamples:");
       console.log(
-        "  $ kousta-node-cli create-project my-project -db mongodb -auth"
+        `  $ ${packageJson.name} create-project my-project -db mongodb -auth`
       );
       console.log(
-        "  $ kousta-node-cli create-project another-project --database mysql"
+        `  $ ${packageJson.name} create-project another-project --database mysql`
       );
     });
 
@@ -119,15 +116,15 @@ figlet("Kousta CLI", (err, data) => {
     .action(makeResource)
     .on("--help", () => {
       console.log("\nExamples:");
-      console.log("  $ kousta-node-cli make:resource");
+      console.log(`  $ ${packageJson.name} make:resource`);
     });
 
   program.on("--help", () => {
     console.log("\nExamples:");
     console.log(
-      "  $ kousta-node-cli create-project my-project -db mongodb -auth"
+      `  $ ${packageJson.name} create-project my-project -db mongodb -auth`
     );
-    console.log("  $ kousta-node-cli make:resource");
+    console.log(`  $ ${packageJson.name} make:resource`);
   });
 
   program.parse(process.argv);

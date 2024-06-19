@@ -1,13 +1,13 @@
 {
-  "name": "kousta-node-cli",
+  "name": "kousta-cli",
   "author": "Oussama Tailba",
   "license": "MIT",
-  "version": "0.0.12",
+  "version": "0.0.2",
   "description": "CLI to bootstrap Node.js API projects",
   "main": "index.js",
   "type": "module",
   "bin": {
-    "kousta-node-cli": "./index.js"
+    "kousta-cli": "./index.js"
   },
   "dependencies": {
     "chalk": "^5.3.0",
