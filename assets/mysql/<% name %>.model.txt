@@ -1,0 +1,17 @@
+import { DataTypes } from "sequelize";
+import { db } from "../../database/config";
+
+export const <% name %>Model = db.define(
+  "<% name %>",
+  {
+
+  },
+  {
+    hooks: {
+      beforeDestroy() {
+        console.log("beforeCreate");
+      },
+    },
+  }
+);
+

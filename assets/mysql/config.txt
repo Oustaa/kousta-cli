@@ -1,0 +1,23 @@
+import { Sequelize } from "sequelize";
+import logger from "../utils/Logger";
+
+const { DBHOST, DBUSERNAME, PASSWORD, DBNAME } = process.env;
+
+export const db = new Sequelize(
+  DBNAME as string,
+  DBUSERNAME as string,
+  PASSWORD,
+  {
+    host: DBHOST as string,
+    port: 3306,
+    dialect: "mysql",
+  },
+);
+
+export function connect(): void {
+  db.authenticate()
+    .then(() => {
+      logger.log("Connection has been established successfully.");
+    })
+    .catch((err: any) => logger.log("Database connection error:", err));
+}

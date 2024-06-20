@@ -1,0 +1,3 @@
+DBHOST: nonEmptyString(),
+    DBUSERNAME: nonEmptyString(),
+    DBNAME: nonEmptyString(),

@@ -1,0 +1,48 @@
+import { Router, Request, Response, NextFunction } from 'express';
+import Controller from '../../utils/interfaces/Controler.interface';
+import HttpException from '../../utils/exceptions/http.exception';
+import validationMiddleware from '../../middleware/validation.middleware';
+import validate from './<% name %>.validation';
+import responseHandler from '../../utils/ResponseHandler';
+import <% Name %>Model from './<% name %>.model';
+
+class <% Name %>Controller implements Controller {
+  private <% name %> = <% Name %>Model;
+  public path = '/posts';
+  public router = Router();
+
+  constructor() {
+    this.initialiseRoutes();
+  }
+
+  private initialiseRoutes(): void {
+    this.router.<% name %>(
+      `${this.path}`,
+      validationMiddleware(validate.create),
+      this.create,
+    );
+  }
+
+  private create = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
+    try {
+      const { title, body } = req.body;
+
+      const <% name %> = await this.<% name %>.create({ title, body });
+
+      responseHandler.createSuccessResponse({
+        res,
+        data: <% name %>,
+        message: '<% Name %> was created successfully',
+        dataName: '<% name %>',
+      });
+    } catch (error: any) {
+      next(new HttpException(400, error.message));
+    }
+  };
+}
+
+export default <% Name %>Controller;
