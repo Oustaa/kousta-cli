@@ -46,12 +46,20 @@ export async function initializeProject(options, endCb) {
     }
   );
 
+  fs.writeFileSync(
+    path.join(process.cwd(), options.projectName, "kousta.json"),
+    `{
+  "projectName": "${options.projectName}",
+  "database": "${options.dbType}"
+}`
+  );
+
   endCb();
 
   await populateEnv(options);
 
   await dbConnection(options);
 
-  // await instalingDependencies(options.projectName);
+  await instalingDependencies(options);
 }
 
