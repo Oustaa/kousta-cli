@@ -4,21 +4,16 @@ import { program } from "commander";
 import chalk from "chalk";
 import figlet from "figlet";
 import { createSpinner } from "nanospinner";
-import { readFileSync, existsSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
 
 import { askQuestion } from "./utils/ask.js";
 import { initializeProject } from "./utils/initProject.js";
+import { __dirname } from "./constants/index.js";
 
-// Get the current directory of the script
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Try to read the package.json file
 let packageJson;
 try {
-  const packageJsonPath = join(__dirname, "package.json");
+  const packageJsonPath = join(__dirname(import.meta.url), "package.json");
   if (!existsSync(packageJsonPath)) {
     throw new Error(`package.json not found at ${packageJsonPath}`);
   }

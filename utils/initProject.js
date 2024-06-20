@@ -1,16 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "url";
+
+import { __dirname } from "../constants/index.js";
+import { populateEnv } from "./populateenv.js";
+import { dbConnection } from "./dbConnection.js";
+import { instalingDependencies } from "./instalingDependencies.js";
 
 /**
  * projectName: string
  * dbType : mongoDB | mysql
  * withAuth: boolean
  */
-
-// Get the current directory of the script
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export async function initializeProject(options, endCb) {
   const projectPath = path.join(process.env.PWD, options.projectName);
@@ -20,7 +20,7 @@ export async function initializeProject(options, endCb) {
   }
 
   fs.readdir(
-    path.join(__dirname, "..", "project"),
+    path.join(__dirname(import.meta.url), "..", "project"),
     {
       recursive: true,
     },
@@ -32,14 +32,14 @@ export async function initializeProject(options, endCb) {
 
       files.forEach((fileFolder) => {
         const stat = fs.statSync(
-          path.join(__dirname, "..", "project", fileFolder)
+          path.join(__dirname(import.meta.url), "..", "project", fileFolder)
         );
         if (stat.isDirectory()) {
           fs.mkdirSync(path.join(projectPath, fileFolder));
           return;
         }
         fs.copyFileSync(
-          path.join(__dirname, "..", "project", fileFolder),
+          path.join(__dirname(import.meta.url), "..", "project", fileFolder),
           path.join(projectPath, fileFolder)
         );
       });
@@ -47,5 +47,11 @@ export async function initializeProject(options, endCb) {
   );
 
   endCb();
+
+  await populateEnv(options);
+
+  await dbConnection(options);
+
+  // await instalingDependencies(options.projectName);
 }
 
