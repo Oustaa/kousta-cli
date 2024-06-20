@@ -3,6 +3,7 @@ import 'module-alias/register';
 import http from 'node:http';
 import APP from './app';
 import validateEnv from './utils/validateEnv';
+import { Request, Response }from "express"
 import PostController from './resources/post/post.controler';
 import logger from './utils/Logger';
 
@@ -11,6 +12,12 @@ validateEnv();
 const PORT = process.env.PORT;
 
 const app = APP.getApp([new PostController()]);
+
+app.get("/test" , (req:Request, res:Response) => {
+  res.send("Hello World!");
+})
+
+
 
 const server = http.createServer(app);
 
