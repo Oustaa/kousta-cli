@@ -5,12 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "dev": "tsc-watch --onSuccess \"node ./dist/index.js\"",
     "build": "tsc"
   },
-  "keywords": [],
-  "author": "Oussama Tailba",
-  "license": "MIT",
   "dependencies": {
     "@eslint/config-array": "^0.16.0",
     "@eslint/object-schema": "^2.1.4",
@@ -46,6 +43,7 @@
   "_moduleAliases": {
     "@/resources": "dist/resources",
     "@/utils": "dist/utils",
-    "@/middleware": "dist/middleware"
+    "@/middleware": "dist/middleware",
+    "@/database": "dist/database"
   }
 }

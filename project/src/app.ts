@@ -1,13 +1,12 @@
-import express, { Application } from 'express';
-import mongoose from 'mongoose';
-import compression from 'compression';
-import cors from 'cors';
-import morgan from 'morgan';
-import helmet from 'helmet';
+import express, { Application } from "express";
+import compression from "compression";
+import cors from "cors";
+import morgan from "morgan";
+import helmet from "helmet";
+import { connect } from "./database/config";
 
-import Controller from './utils/interfaces/Controler.interface';
-import ErrorMiddleware from './middleware/error.middleware';
-import logger from './utils/Logger';
+import Controller from "./utils/interfaces/Controler.interface";
+import ErrorMiddleware from "./middleware/error.middleware";
 
 export default class APP {
   private static instance: APP;
@@ -32,7 +31,7 @@ export default class APP {
   private initialiseMiddleware(): void {
     this.express.use(helmet());
     this.express.use(cors());
-    this.express.use(morgan('dev'));
+    this.express.use(morgan("dev"));
     this.express.use(express.json());
     this.express.use(express.urlencoded({ extended: false }));
     this.express.use(compression());
@@ -49,9 +48,6 @@ export default class APP {
   }
 
   private initialiseDatabaseConnection(): void {
-    mongoose
-      .connect(process.env.MONGO_URL!)
-      .then(() => logger.log('Database connected successfully'))
-      .catch((error) => logger.log('Database connection error:', error));
+    connect();
   }
 }
