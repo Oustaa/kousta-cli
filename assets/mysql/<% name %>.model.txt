@@ -6,12 +6,5 @@ export const <% name %>Model = db.define(
   {
 
   },
-  {
-    hooks: {
-      beforeDestroy() {
-        console.log("beforeCreate");
-      },
-    },
-  }
 );
 
