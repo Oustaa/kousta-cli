@@ -9,6 +9,7 @@ import { join } from "node:path";
 
 import { askQuestion } from "./utils/ask.js";
 import { initializeProject } from "./utils/initProject.js";
+import { createResource } from "./utils/resource/createResource.js"
 import { __dirname } from "./constants/index.js";
 
 let packageJson;
@@ -71,8 +72,14 @@ async function makeResource() {
     defaultValue: "resource-name",
   });
 
-  console.log(`Creating resource: ${resourceName}`);
-  // Further code to create the resource
+  try {
+    const spinner = createSpinner("Creating resource...").start();
+    await createResource(resourceName)
+    spinner.success();
+  } catch (error) {
+    console.log(error)
+    spinner.error();
+  }
 }
 
 figlet("Kousta CLI", (err, data) => {
