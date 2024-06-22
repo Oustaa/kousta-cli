@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import Controller from '../../utils/interfaces/Controler.interface';
+import Controller from '../../utils/interfaces/Controller.interface';
 import HttpException from '../../utils/exceptions/http.exception';
 import validationMiddleware from '../../middleware/validation.middleware';
 import validate from './<% name %>.validation';
@@ -12,11 +12,11 @@ class <% Name %>Controller implements Controller {
   public router = Router();
 
   constructor() {
-    this.initialiseRoutes();
+    this.initializeRoutes();
   }
 
-  private initialiseRoutes(): void {
-    this.router.<% name %>(
+  private initializeRoutes(): void {
+    this.router.post(
       `${this.path}`,
       validationMiddleware(validate.create),
       this.create,

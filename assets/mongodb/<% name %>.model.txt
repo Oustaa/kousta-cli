@@ -1,13 +1,12 @@
 import { Schema, model, Document } from 'mongoose';
 
 export interface <% Name %>Interface extends Document {
-  title: string;
-  body: string;
+
 }
 
 const <% Name %>Schema = new Schema(
   {
-    
+
   },
   {
     timestamps: true,
