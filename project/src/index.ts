@@ -4,14 +4,14 @@ import http from 'node:http';
 import APP from './app';
 import validateEnv from './utils/validateEnv';
 import { Request, Response }from "express"
-import PostController from './resources/post/post.controler';
 import logger from './utils/Logger';
+import { initialiseControllers } from "./helpers/initialiseControllers";
 
 validateEnv();
 
 const PORT = process.env.PORT;
 
-const app = APP.getApp([new PostController()]);
+const app = APP.getApp(initialiseControllers());
 
 app.get("/test" , (req:Request, res:Response) => {
   res.send("Hello World!");
