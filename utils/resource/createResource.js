@@ -4,6 +4,8 @@ import path from "node:path"
 import { __dirname } from "../../constants/index.js"
 import { nameCapitalize, readKoustaJson } from "../../helpers/index.js"
 import { populateModel } from "./populateModel.js"
+import { populateValidation } from "./populateValidation.js"
+import { populateController } from "./populateController.js"
 
 export const createResource = async (name) => {
     const capitalizeName = nameCapitalize(name)
@@ -19,6 +21,14 @@ export const createResource = async (name) => {
         const projectInfo = await readKoustaJson();
 
         populateModel(
+            { name, capitalizeName, dbType: projectInfo.database }
+        )
+
+        populateValidation(
+            { name, capitalizeName, dbType: projectInfo.database }
+        )
+
+        populateController(
             { name, capitalizeName, dbType: projectInfo.database }
         )
 

@@ -8,8 +8,5 @@ export const readKoustaJson = async () => {
 
     const koustaJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), "kousta.json"), "utf-8"));
 
-    console.log(koustaJson.projectName)
-    console.log(koustaJson.database)
-
     return koustaJson
 }

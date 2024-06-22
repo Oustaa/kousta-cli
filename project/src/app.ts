@@ -5,7 +5,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import { connect } from "./database/config";
 
-import Controller from "./utils/interfaces/Controler.interface";
+import Controller from "./utils/interfaces/Controller.interface";
 import ErrorMiddleware from "./middleware/error.middleware";
 
 export default class APP {

@@ -65,8 +65,8 @@ async function createProject(projectName, options) {
   );
 }
 
-async function makeResource() {
-  const resourceName = await askQuestion({
+async function makeResource(name) {
+  const resourceName = name ? name : await askQuestion({
     type: "input",
     message: "Enter the name of the resource:",
     defaultValue: "resource-name",
@@ -113,7 +113,7 @@ figlet("Kousta CLI", (err, data) => {
     });
 
   program
-    .command("make:resource")
+    .command("make:resource [resource-name]")
     .description("Create a new resource with specified name")
     .action(makeResource)
     .on("--help", () => {
