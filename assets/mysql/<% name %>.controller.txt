@@ -8,20 +8,50 @@ import <% Name %>Model from './<% name %>.model';
 
 class <% Name %>Controller implements Controller {
   private <% name %> = <% Name %>Model;
-  public path = '/posts';
+  public path = '/<% pluralName %>';
   public router = Router();
 
-  constructor() {
+  constructor(force: boolean = false) {
     this.initializeRoutes();
+    this.createTable(force);
   }
 
   private initializeRoutes(): void {
+    this.router.get(`${this.path}`, this.findAll);
     this.router.post(
       `${this.path}`,
       validationMiddleware(validate.create),
       this.create,
     );
+    this.router.delete(`${this.path}/:id?`, this.delete);
   }
+
+  private createTable(force: boolean) {
+    this.<% name %>.sync({ force });
+  }
+
+  private findAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
+    const all = await this.<% name %> .findAll();
+
+    if (all.length === 0) {
+      return responseHandler.sendSuccessResponse({
+        code: 204,
+        res,
+      });
+    }
+
+    responseHandler.sendSuccessResponse({
+      code: 200,
+      res,
+      data: all,
+      dataName: "<% pluralName %>",
+      message: "<% Name %> were found successfully",
+    });
+  };
 
   private create = async (
     req: Request,
@@ -29,9 +59,9 @@ class <% Name %>Controller implements Controller {
     next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const { title, body } = req.body;
+      const body = req.body;
 
-      const <% name %> = await this.<% name %>.create({ title, body });
+      const <% name %> = await this.<% name %>.create(body);
 
       responseHandler.createSuccessResponse({
         res,
@@ -42,6 +72,37 @@ class <% Name %>Controller implements Controller {
     } catch (error: any) {
       next(new HttpException(400, error.message));
     }
+  };
+
+  private delete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
+    const id = req.params.id;
+
+    const where: Record<string, number | string> = {};
+
+    if (id) {
+      where.id = id;
+    }
+
+    const deleteCount = await this.<% name %>.destroy({
+      where,
+    });
+
+    if (deleteCount === 0) {
+      return responseHandler.sendSuccessResponse({
+        code: 204,
+        res,
+      });
+    }
+
+    responseHandler.sendSuccessResponse({
+      code: 200,
+      res,
+      message: "<% Name %> was deleted successfully",
+    });
   };
 }
 

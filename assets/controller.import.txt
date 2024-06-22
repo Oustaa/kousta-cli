@@ -1,0 +1,2 @@
+import <% Name %>Controller from "../resources/<% name %>/<% name %>.controller";
+// <% controller-import %>
