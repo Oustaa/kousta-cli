@@ -4,17 +4,18 @@ import { program } from "commander";
 import chalk from "chalk";
 import figlet from "figlet";
 import { createSpinner } from "nanospinner";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, writeFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 import { askQuestion } from "./utils/ask.js";
 import { initializeProject } from "./utils/initProject.js";
-import { createResource } from "./utils/resource/createResource.js"
+import { createResource } from "./utils/resource/createResource.js";
 import { __dirname } from "./constants/index.js";
 
 let packageJson;
 try {
   const packageJsonPath = join(__dirname(import.meta.url), "package.json");
+  console.log(packageJsonPath);
   if (!existsSync(packageJsonPath)) {
     throw new Error(`package.json not found at ${packageJsonPath}`);
   }
@@ -63,21 +64,38 @@ async function createProject(projectName, options) {
     },
     spinner.success
   );
+
+  try {
+    const packageJsonContent = JSON.parse(
+      readFileSync(join(process.cwd(), projectName, "package.json"), "utf-8")
+    );
+
+    packageJsonContent.name = projectName;
+
+    writeFileSync(
+      join(process.cwd(), projectName, "package.json"),
+      JSON.stringify(packageJsonContent, null, 2)
+    );
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function makeResource(name) {
-  const resourceName = name ? name : await askQuestion({
-    type: "input",
-    message: "Enter the name of the resource:",
-    defaultValue: "resource-name",
-  });
+  const resourceName = name
+    ? name
+    : await askQuestion({
+        type: "input",
+        message: "Enter the name of the resource:",
+        defaultValue: "resource-name",
+      });
 
   try {
     const spinner = createSpinner("Creating resource...").start();
-    await createResource(resourceName)
+    await createResource(resourceName);
     spinner.success();
   } catch (error) {
-    console.log(error)
+    console.log(error);
     spinner.error();
   }
 }
