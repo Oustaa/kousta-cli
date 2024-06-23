@@ -1,14 +1,19 @@
-import { Router, Request, Response, NextFunction } from 'express';
-import Controller from '../../utils/interfaces/Controller.interface';
-import HttpException from '../../utils/exceptions/http.exception';
-import validationMiddleware from '../../middleware/validation.middleware';
-import validate from './<% name %>.validation';
-import responseHandler from '../../utils/ResponseHandler';
-import <% Name %>Model from './<% name %>.model';
+import { Router, Request, Response, NextFunction } from "express";
+import Controller from "../../utils/interfaces/Controller.interface";
+import HttpException from "../../utils/exceptions/http.exception";
+import validationMiddleware from "../../middleware/validation.middleware";
+import validate from "./<% name %>.validation";
+import responseHandler from "../../utils/ResponseHandler";
+import <% Name %>Model from "./<% name %>.model";
+import { getWhere } from "../../helpers/whereConditions";
+import {
+  getPagination,
+  getPaginationMetaData,
+} from "../../helpers/getpagination";
 
 class <% Name %>Controller implements Controller {
   private <% name %> = <% Name %>Model;
-  public path = '/<% pluralName %>';
+  public path = "/<% pluralName %>";
   public router = Router();
 
   constructor(force: boolean = false) {
@@ -23,6 +28,11 @@ class <% Name %>Controller implements Controller {
       validationMiddleware(validate.create),
       this.create,
     );
+    this.router.put(
+      `${this.path}/:id`,
+      validationMiddleware(validate.update),
+      this.update,
+    );
     this.router.delete(`${this.path}/:id?`, this.delete);
   }
 
@@ -35,22 +45,68 @@ class <% Name %>Controller implements Controller {
     res: Response,
     next: NextFunction,
   ): Promise<Response | void> => {
-    const all = await this.<% name %> .findAll();
+    try {
+      const { limit, offset, page } = getPagination(req);
+      const where = getWhere(req);
 
-    if (all.length === 0) {
-      return responseHandler.sendSuccessResponse({
-        code: 204,
-        res,
+      const condition: Record<string, string | number> = {};
+
+      if (limit) {
+        condition.limit = limit;
+      }
+      if (offset) {
+        condition.offset = offset;
+      }
+
+      const { count, rows: all } = await this.<% name %>.findAndCountAll({
+        where,
+        ...condition,
       });
-    }
 
-    responseHandler.sendSuccessResponse({
-      code: 200,
-      res,
-      data: all,
-      dataName: "<% pluralName %>",
-      message: "<% Name %> were found successfully",
-    });
+      if (all.length === 0) {
+        return responseHandler.sendSuccessResponse({
+          code: 204,
+          res,
+        });
+      }
+
+      responseHandler.sendSuccessResponse({
+        code: 200,
+        res,
+        data: all,
+        dataName: "<% pluralName %>",
+        message: "<% PluralName %> were found successfully",
+        meta:
+          page && limit ? getPaginationMetaData(count, page, limit) : undefined,
+      });
+    } catch (error: any) {
+      next(new HttpException(400, "Server error"));
+    }
+  };
+
+  private update = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
+    try {
+      const body = req.body;
+
+      const <% name %> = await this.<% name %>.update(body, {
+        where: {
+          id: req.params.id,
+        },
+      });
+
+      responseHandler.createSuccessResponse({
+        res,
+        data: <% name %>,
+        message: "<% Name %> was updated successfully",
+        dataName: "<% name %>",
+      });
+    } catch (error: any) {
+      next(new HttpException(500, error.message));
+    }
   };
 
   private create = async (
@@ -66,11 +122,11 @@ class <% Name %>Controller implements Controller {
       responseHandler.createSuccessResponse({
         res,
         data: <% name %>,
-        message: '<% Name %> was created successfully',
-        dataName: '<% name %>',
+        message: "<% Name %> was created successfully",
+        dataName: "<% name %>",
       });
     } catch (error: any) {
-      next(new HttpException(400, error.message));
+      next(new HttpException(500, error.message));
     }
   };
 
@@ -79,30 +135,28 @@ class <% Name %>Controller implements Controller {
     res: Response,
     next: NextFunction,
   ): Promise<Response | void> => {
-    const id = req.params.id;
+    try {
+      const id = req.params.id;
 
-    const where: Record<string, number | string> = {};
-
-    if (id) {
-      where.id = id;
-    }
-
-    const deleteCount = await this.<% name %>.destroy({
-      where,
-    });
-
-    if (deleteCount === 0) {
-      return responseHandler.sendSuccessResponse({
-        code: 204,
-        res,
+      const deleteCount = await this.<% name %>.destroy({
+        where: { id },
       });
-    }
 
-    responseHandler.sendSuccessResponse({
-      code: 200,
-      res,
-      message: "<% Name %> was deleted successfully",
-    });
+      if (deleteCount === 0) {
+        return responseHandler.sendSuccessResponse({
+          code: 204,
+          res,
+        });
+      }
+
+      responseHandler.sendSuccessResponse({
+        code: 200,
+        res,
+        message: "<% Name %> was deleted successfully",
+      });
+    } catch (error: any) {
+      next(new HttpException(500, error.message));
+    }
   };
 }
 

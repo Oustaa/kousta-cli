@@ -27,7 +27,7 @@ const <% Name %>Model = db.define<<% Name %>Instance>(
   },
   {
     timestamps: true,
-    tableName: "<% name %>",
+    tableName: "<% pluralName %>",
   },
 );
 

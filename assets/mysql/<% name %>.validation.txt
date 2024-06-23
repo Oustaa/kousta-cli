@@ -2,9 +2,9 @@ import Joi from "joi";
 
 const create = Joi.object({});
 
-const edit = Joi.object({});
+const update = Joi.object({});
 
 export default {
   create,
-  edit
+  update
 };

@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import logger from './Logger';
+import { PaginationMetaData } from "../helpers/getpagination";
 
 export default class ResponseHandler {
   private static logger = logger;
@@ -62,8 +63,9 @@ export default class ResponseHandler {
     code: 200 | 201 | 203 | 204;
     data?: any;
     dataName?: string;
+    meta?: PaginationMetaData;
   }): Response {
-    const { res, message, code, data, dataName } = arg1;
+    const { res, message, code, data, dataName, meta } = arg1;
 
     ResponseHandler.logger.log(
       `a request has been made and proccessed successfully at: ${new Date()}`,
@@ -78,7 +80,8 @@ export default class ResponseHandler {
 
     return res.send({
       message,
-      [dataName || 'data']: data,
+      [dataName || "data"]: data,
+      meta,
     });
   }
 
