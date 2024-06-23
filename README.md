@@ -37,7 +37,7 @@ kousta-cli create-project another-project --database mysql
 Creates a new resource in the project.
 
 ```sh
-kousta-cli make:resource
+kousta-cli make:resource  [resource-name]
 ```
 
 ### Help Command
@@ -60,15 +60,18 @@ After creating a project, the following structure will be generated:
 ```bash
 my-project/
 ├── src/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
+│   ├── database/
+│   ├── helpers/
+│   ├── middleware/
+│   ├── resources/
 │   ├── utils/
 │   ├── app.ts
-│   └── server.ts
+│   └── index.ts
 ├── .env
-├── .gitignore
+├── .eslintrc.js
+├── .prettierrc.js
+├── kousta.json
+├── package-lock.json
 ├── package.json
 ├── tsconfig.json
 └── README.md
@@ -83,9 +86,8 @@ This project is licensed under the MIT License.
 ## Author
 Oussama Tailba
 
-```css
 This README.md file is formatted to provide clear instructions and comprehensive information for users to understand and use the `kousta-cli` effectively, presented in a structured and visually appealing manner.
-```
+
 
 
 
