@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { __dirname } from "../../constants/index.js";
-import { pluralize } from "../../helpers/index.js";
+import { replaceAll } from "../../helpers/replaceAll.js";
 
 export function populateController({ name, capitalizeName, dbType }) {
   const ControllerContent = fs.readFileSync(
@@ -17,12 +17,7 @@ export function populateController({ name, capitalizeName, dbType }) {
     "utf-8"
   );
 
-  const modifiedControllerContent = ControllerContent.replaceAll(
-    "<% name %>",
-    name
-  )
-    .replaceAll("<% Name %>", capitalizeName)
-    .replaceAll("<% pluralName %>", pluralize(name));
+  const modifiedControllerContent = replaceAll(ControllerContent, name);
 
   fs.writeFileSync(
     path.join(process.cwd(), "src", "resources", name, `${name}.controller.ts`),
