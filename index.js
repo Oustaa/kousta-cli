@@ -4,13 +4,14 @@ import { program } from "commander";
 import chalk from "chalk";
 import figlet from "figlet";
 import { createSpinner } from "nanospinner";
-import { readFileSync, existsSync, writeFileSync, readdirSync } from "node:fs";
+import { readFileSync, existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { askQuestion } from "./utils/ask.js";
 import { initializeProject } from "./utils/initProject.js";
-import { createResource } from "./utils/resource/createResource.js";
+import { createHttp } from "./utils/resource/createHttp.js";
 import { __dirname } from "./constants/index.js";
+import { createController } from "./utils/resource/createController.js";
 
 let packageJson;
 try {
@@ -87,12 +88,11 @@ async function makeResource(name) {
     : await askQuestion({
         type: "input",
         message: "Enter the name of the resource:",
-        defaultValue: "resource-name",
       });
 
   try {
     const spinner = createSpinner("Creating resource...").start();
-    await createResource(resourceName);
+    await createHttp(resourceName);
     spinner.success();
   } catch (error) {
     console.log(error);
@@ -137,6 +137,15 @@ figlet("Kousta CLI", (err, data) => {
     .on("--help", () => {
       console.log("\nExamples:");
       console.log(`  $ ${packageJson.name} make:resource`);
+    });
+
+  program
+    .command("make:controller [controller-name]")
+    .description("Create a new controller with specified name")
+    .action(createController)
+    .on("--help", () => {
+      console.log("\nExamples:");
+      console.log(`  $ ${packageJson.name} make:controller`);
     });
 
   program.on("--help", () => {

@@ -2,34 +2,26 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { __dirname } from "../../constants/index.js";
-import {
-  nameCapitalize,
-  readKoustaJson,
-  replaceAll,
-} from "../../helpers/index.js";
+import { replaceAll, nameCapitalize } from "../../helpers/index.js";
+import { readKoustaJson } from "../../helpers/readkoustaJson.js";
 import { createSpinner } from "nanospinner";
+import { askQuestion } from "../ask.js";
 
-export async function createResource(name) {
+export async function createModel(name) {
   name = name
     ? name
     : await askQuestion({
         type: "input",
-        message: "Enter resource name:",
+        message: "Enter the model name:",
       });
 
-  const spinner = createSpinner("Creating resource...").start();
+  const spinner = createSpinner("Creating model...").start();
+
+  const capitalizeName = nameCapitalize(name);
+  const projectInfo = await readKoustaJson();
+
   try {
-    const capitalizeName = nameCapitalize(name);
-
-    const { database } = await readKoustaJson();
-    const modelsPath = path.join(
-      process.cwd(),
-      "src",
-      "App",
-      "Http",
-      "Resources"
-    );
-
+    const modelsPath = path.join(process.cwd(), "src", "App", "Models");
     if (!fs.existsSync(modelsPath)) {
       fs.mkdirSync(modelsPath);
     }
@@ -39,8 +31,8 @@ export async function createResource(name) {
         "..",
         "..",
         "assets",
-        database,
-        "resource.txt"
+        projectInfo.database,
+        "Model.txt"
       ),
       "utf-8"
     );
@@ -48,7 +40,7 @@ export async function createResource(name) {
     const modifiedModelContent = replaceAll(modelContent, name);
 
     fs.writeFileSync(
-      path.join(modelsPath, `${capitalizeName}Resource.ts`),
+      path.join(modelsPath, `${capitalizeName}Model.ts`),
       modifiedModelContent
     );
     spinner.success();

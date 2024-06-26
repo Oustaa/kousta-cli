@@ -8,7 +8,7 @@ export async function populateEnv({ dbType, projectName }) {
   const spinner = createSpinner("Populatig .env file...").start();
 
   try {
-    const envPath = path.join(process.cwd(), projectName, ".env");
+    const envPath = path.join(process.cwd(), projectName, ".env.example");
     const dbEnvDist = fs
       .readFileSync(
         path.join(__dirname(import.meta.url), "..", "assets", dbType, "env.txt")
@@ -22,7 +22,10 @@ export async function populateEnv({ dbType, projectName }) {
       .replace("<% access_token %>", randomBytes(64).toString("hex"))
       .replace("<% refresh_token %>", randomBytes(64).toString("hex"));
 
-    fs.writeFileSync(envPath, updatedEnvContents);
+    fs.writeFileSync(
+      path.join(process.cwd(), projectName, ".env"),
+      updatedEnvContents
+    );
 
     envValidate({ dbType, projectName });
 

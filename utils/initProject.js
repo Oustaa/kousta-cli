@@ -4,7 +4,7 @@ import path from "node:path";
 import { __dirname } from "../constants/index.js";
 import { populateEnv } from "./populateenv.js";
 import { dbConnection } from "./dbConnection.js";
-import { instalingDependencies } from "./instalingDependencies.js";
+import { instalingDependencies } from "./installDependencies.js";
 
 /**
  * projectName: string
