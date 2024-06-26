@@ -3,21 +3,17 @@ import 'module-alias/register';
 import http from 'node:http';
 import APP from './app';
 import validateEnv from './utils/validateEnv';
-import { Request, Response }from "express"
 import logger from './utils/Logger';
-import { initialiseControllers } from "./helpers/initialiseControllers";
+import appRoutes from "./Routes";
+
 
 validateEnv();
 
 const PORT = process.env.PORT;
 
-const app = APP.getApp(initialiseControllers());
+const app = APP.getApp();
 
-app.get("/test" , (req:Request, res:Response) => {
-  res.send("Hello World!");
-})
-
-
+app.use(appRoutes);
 
 const server = http.createServer(app);
 

@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import logger from './Logger';
-import { PaginationMetaData } from "../helpers/getpagination";
+import { PaginationMetaData } from "../kousta/getpagination";
 
 export default class ResponseHandler {
   private static logger = logger;

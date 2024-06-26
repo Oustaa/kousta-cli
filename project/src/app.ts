@@ -5,8 +5,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import { connect } from "./database/config";
 
-import Controller from "./utils/interfaces/Controller.interface";
-import ErrorMiddleware from "./middleware/error.middleware";
+import ErrorMiddleware from "./App/Http/Middleware/error.middleware";
 
 export default class APP {
   private static instance: APP;
@@ -19,10 +18,9 @@ export default class APP {
     this.initialiseErrorHandling();
   }
 
-  public static getApp(controllers: Controller[]): Application {
+  public static getApp(): Application {
     if (!APP.instance) {
       APP.instance = new APP();
-      APP.instance.initialiseControllers(controllers);
     }
 
     return APP.instance.express;
@@ -36,13 +34,7 @@ export default class APP {
     this.express.use(express.urlencoded({ extended: false }));
     this.express.use(compression());
   }
-
-  private initialiseControllers(controllers: Controller[]): void {
-    controllers.forEach((controller) => {
-      this.express.use(`/api`, controller.router);
-    });
-  }
-
+  
   private initialiseErrorHandling(): void {
     this.express.use(ErrorMiddleware);
   }
