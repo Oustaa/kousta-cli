@@ -1,0 +1,9 @@
+import Joi from "joi";
+
+class <% Name %>Request {
+  public static create = Joi.object({});
+
+  public static update = Joi.object({});
+}
+
+export default <% Name %>Request;

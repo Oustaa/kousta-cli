@@ -1,0 +1,6 @@
+const <% Name %>Resource = {};
+
+export default <% Name %>Resource as Record<
+  keyof typeof <% Name %>Resource,
+  (string | [string, string])[]
+>;

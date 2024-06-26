@@ -1,19 +1,20 @@
 import { Router, Request, Response, NextFunction } from "express";
-import Controller from "../../utils/interfaces/Controller.interface";
-import HttpException from "../../utils/exceptions/http.exception";
-import validationMiddleware from "../../middleware/validation.middleware";
-import validate from "./<% name %>.validation";
-import responseHandler from "../../utils/ResponseHandler";
-import <% Name %>Model from "./<% name %>.model";
-import { getWhere } from "../../helpers/whereConditions";
+import Controller from "../../../utils/interfaces/Controller.interface";
+import HttpException from "../../../utils/exceptions/http.exception";
+import validationMiddleware from "../Middleware/validation.middleware";
+import <% Name %>Request from "../Requests/<% Name %>Request";
+import <% Name %>Model from "../../Models/<% Name %>Model";
+import responseHandler from "../../../utils/ResponseHandler";
+import { getWhere } from "../../../kousta/whereConditions";
+import <% Name %>Resource from "../Resources/<% Name %>Resource";
 import {
   getPagination,
   getPaginationMetaData,
-} from "../../helpers/getpagination";
+} from "../../../kousta/getpagination";
 
 class <% Name %>Controller implements Controller {
   private <% name %> = <% Name %>Model;
-  public path = "/<% pluralName %>";
+  public path = "/<% name %>s";
   public router = Router();
 
   constructor(force: boolean = false) {
@@ -22,18 +23,18 @@ class <% Name %>Controller implements Controller {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}`, this.findAll);
+    this.router.get("/", this.findAll);
     this.router.post(
-      `${this.path}`,
-      validationMiddleware(validate.create),
+      "/",
+      validationMiddleware(<% Name %>Request.create),
       this.create,
     );
     this.router.put(
-      `${this.path}/:id`,
-      validationMiddleware(validate.update),
+      "/:id",
+      validationMiddleware(<% Name %>Request.update),
       this.update,
     );
-    this.router.delete(`${this.path}/:id?`, this.delete);
+    this.router.delete("/:id", this.delete);
   }
 
   private createTable(force: boolean) {
@@ -61,6 +62,7 @@ class <% Name %>Controller implements Controller {
       const { count, rows: all } = await this.<% name %>.findAndCountAll({
         where,
         ...condition,
+        attributes: <% Name %>Resource.getAll,
       });
 
       if (all.length === 0) {
@@ -74,8 +76,8 @@ class <% Name %>Controller implements Controller {
         code: 200,
         res,
         data: all,
-        dataName: "<% pluralName %>",
-        message: "<% PluralName %> were found successfully",
+        dataName: "<% name %>s",
+        message: "<% Name %>s were found successfully",
         meta:
           page && limit ? getPaginationMetaData(count, page, limit) : undefined,
       });
