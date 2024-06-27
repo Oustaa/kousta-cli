@@ -5,13 +5,13 @@ import chalk from "chalk";
 import figlet from "figlet";
 import { createSpinner } from "nanospinner";
 import { readFileSync, existsSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
+import { execSync } from "child_process";
 
 import { askQuestion } from "./utils/ask.js";
 import { initializeProject } from "./utils/initProject.js";
-import { createHttp } from "./utils/resource/createHttp.js";
 import { __dirname } from "./constants/index.js";
-import { createController } from "./utils/resource/createController.js";
+import { initMakeCommands } from "./utils/make:/index.js";
 
 let packageJson;
 try {
@@ -82,24 +82,6 @@ async function createProject(projectName, options) {
   }
 }
 
-async function makeResource(name) {
-  const resourceName = name
-    ? name
-    : await askQuestion({
-        type: "input",
-        message: "Enter the name of the resource:",
-      });
-
-  try {
-    const spinner = createSpinner("Creating resource...").start();
-    await createHttp(resourceName);
-    spinner.success();
-  } catch (error) {
-    console.log(error);
-    spinner.error();
-  }
-}
-
 figlet("Kousta CLI", (err, data) => {
   if (err) {
     console.log("Something went wrong...");
@@ -130,22 +112,21 @@ figlet("Kousta CLI", (err, data) => {
       );
     });
 
-  program
-    .command("make:resource [resource-name]")
-    .description("Create a new resource with specified name")
-    .action(makeResource)
-    .on("--help", () => {
-      console.log("\nExamples:");
-      console.log(`  $ ${packageJson.name} make:resource`);
-    });
+  initMakeCommands(program, packageJson.name);
 
   program
-    .command("make:controller [controller-name]")
-    .description("Create a new controller with specified name")
-    .action(createController)
-    .on("--help", () => {
-      console.log("\nExamples:");
-      console.log(`  $ ${packageJson.name} make:controller`);
+    .command("db:migrate")
+    .description("Sync the database tables")
+    .option("-f, --force", "Force sync the tables")
+    .action((cmd) => {
+      const force = cmd.force || false;
+      const scriptPath = resolve(
+        __dirname(import.meta.url),
+        "/utils/db:/migrat.ts"
+      );
+      execSync(`ts-node ${scriptPath} ${force ? "--force" : ""}`, {
+        stdio: "inherit",
+      });
     });
 
   program.on("--help", () => {
