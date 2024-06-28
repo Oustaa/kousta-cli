@@ -2,7 +2,7 @@
   "name": "kousta-cli",
   "author": "Oussama Tailba",
   "license": "MIT",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "CLI to bootstrap Node.js API projects",
   "main": "index.js",
   "type": "module",
