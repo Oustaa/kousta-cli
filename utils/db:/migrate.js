@@ -2,12 +2,9 @@ import path from "path";
 import fs from "fs";
 import { createSpinner } from "nanospinner";
 import { register } from "ts-node";
-import { pathToFileURL } from "url";
 
-// Register ts-node to handle TypeScript files
-register({
-  project: path.resolve(process.cwd(), "tsconfig.json"),
-});
+// Register ts-node to handle TypeScript imports
+register();
 
 export async function dbMigration(force) {
   const spinner = createSpinner("Seeding the tables...").start();
@@ -17,9 +14,10 @@ export async function dbMigration(force) {
     const files = fs.readdirSync(modelsDir);
 
     for (const file of files) {
-      if (file.endsWith(".ts")) {
+      console.log(file);
+      if (file.endsWith(".ts") || file.endsWith(".js")) {
         const modelPath = path.join(modelsDir, file);
-        const model = await import(pathToFileURL(modelPath).href);
+        const model = await import(modelPath);
 
         if (model.default && typeof model.default.sync === "function") {
           await model.default.sync({ force });
@@ -31,8 +29,12 @@ export async function dbMigration(force) {
     }
     spinner.success();
   } catch (error) {
-    console.log("\n", error);
+    console.error("\n", error);
     spinner.error();
   }
 }
+
+// Get the force argument from the command line
+const force = process.argv.includes("--force");
+dbMigration(force);
 

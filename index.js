@@ -5,18 +5,17 @@ import chalk from "chalk";
 import figlet from "figlet";
 import { createSpinner } from "nanospinner";
 import { readFileSync, existsSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
-import { execSync } from "child_process";
+import { join } from "node:path";
 
 import { askQuestion } from "./utils/ask.js";
 import { initializeProject } from "./utils/initProject.js";
 import { __dirname } from "./constants/index.js";
 import { initMakeCommands } from "./utils/make:/index.js";
+import { initDbCommands } from "./utils/db:/index.js";
 
 let packageJson;
 try {
   const packageJsonPath = join(__dirname(import.meta.url), "package.json");
-  console.log(packageJsonPath);
   if (!existsSync(packageJsonPath)) {
     throw new Error(`package.json not found at ${packageJsonPath}`);
   }
@@ -113,21 +112,7 @@ figlet("Kousta CLI", (err, data) => {
     });
 
   initMakeCommands(program, packageJson.name);
-
-  program
-    .command("db:migrate")
-    .description("Sync the database tables")
-    .option("-f, --force", "Force sync the tables")
-    .action((cmd) => {
-      const force = cmd.force || false;
-      const scriptPath = resolve(
-        __dirname(import.meta.url),
-        "/utils/db:/migrat.ts"
-      );
-      execSync(`ts-node ${scriptPath} ${force ? "--force" : ""}`, {
-        stdio: "inherit",
-      });
-    });
+  initDbCommands(program);
 
   program.on("--help", () => {
     console.log("\nExamples:");
