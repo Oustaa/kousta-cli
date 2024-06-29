@@ -1,6 +1,13 @@
-# Kousta Node CLI
+# Kousta CLI
 
-Kousta Node CLI is a command-line tool designed to bootstrap Node.js API projects quickly and efficiently. It supports creating new projects with different database options and adding authentication features.
+Kousta CLI is a command-line tool designed to bootstrap Node.js API projects quickly and efficiently. It supports creating new projects with different database options and adding authentication features. Kousta CLI speeds up the process of creating an API by providing ready-to-use controllers and is built on top of popular Node.js third-party libraries such as:
+
+- Express: For building the API.
+- Joi: For data validation.
+- Mongoose: For MongoDB ORM.
+- Sequelize: For MySQL ORM.
+
+This CLI tool is intended for personal development use, enabling the developer to quickly set up and start building API projects.
 
 ## Installation
 
@@ -33,11 +40,39 @@ kousta-cli create-project [project-name] [options]
 kousta-cli create-project my-project -db mongodb -auth
 kousta-cli create-project another-project --database mysql
 
+### Make Controller
+Creates a new controller in the project.
+
+```sh
+kousta-cli make:controller  [controller-name]
+```
+
+### Make Model
+Creates a new model in the project.
+
+```sh
+kousta-cli make:model [model-name]
+```
+
+### Make Request
+Creates a new request in the project.
+
+```sh
+kousta-cli make:request  [request-name]
+```
+
 ### Make Resource
 Creates a new resource in the project.
 
 ```sh
 kousta-cli make:resource  [resource-name]
+```
+
+### Make All
+Creates a new controller in the project.
+
+```sh
+kousta-cli make:http-group [resource-name]
 ```
 
 ### Help Command
