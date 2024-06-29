@@ -5,12 +5,12 @@ import validationMiddleware from "../Middleware/validation.middleware";
 import <% Name %>Request from "../Requests/<% Name %>Request";
 import <% Name %>Model from "../../Models/<% Name %>Model";
 import responseHandler from "../../../utils/ResponseHandler";
-import { getWhere } from "../../../kousta/whereConditions";
 import <% Name %>Resource from "../Resources/<% Name %>Resource";
 import {
+  getWhere,
   getPagination,
   getPaginationMetaData,
-} from "../../../kousta/getpagination";
+} from "../../../kousta/@utils";
 
 class <% Name %>Controller implements Controller {
   private <% name %> = <% Name %>Model;
