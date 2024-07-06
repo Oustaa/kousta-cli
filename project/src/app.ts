@@ -3,9 +3,9 @@ import compression from "compression";
 import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
-import { connect } from "./database/config";
 
-import ErrorMiddleware from "./App/Http/Middleware/error.middleware";
+import { connect } from "@/Database/config";
+import ErrorMiddleware from "@/Middleware/error.middleware";
 
 export default class APP {
   private static instance: APP;

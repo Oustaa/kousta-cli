@@ -1,11 +1,11 @@
 import { Router, Request, Response, NextFunction } from "express";
-import Controller from "../../../utils/interfaces/Controller.interface";
-import HttpException from "../../../utils/exceptions/http.exception";
-import validationMiddleware from "../Middleware/validation.middleware";
-import <% Name %>Request from "../Requests/<% Name %>Request";
-import <% Name %>Model from "../../Models/<% Name %>Model";
-import responseHandler from "../../../utils/ResponseHandler";
-import <% Name %>Resource from "../Resources/<% Name %>Resource";
+import Controller from "@/Utils/interfaces/Controller.interface";
+import HttpException from "@/Utils/exceptions/http.exception";
+import validationMiddleware from "@/Middleware/validation.middleware";
+import <% Name %>Request from "@/Requests/<% Name %>Request";
+import <% Name %>Model from "@/Models/<% Name %>Model";
+import responseHandler from "@/Utils/ResponseHandler";
+import <% Name %>Resource from "@/Resources/<% Name %>Resource";
 import {
   getWhere,
   getPagination,
@@ -13,8 +13,8 @@ import {
 } from "../../../kousta/@utils";
 
 class <% Name %>Controller implements Controller {
-  private <% name %> = <% Name %>Model;
-  public path = "/<% name %>s";
+  private <% Name %> = <% Name %>Model;
+  public path = "/<% pluralName %>";
   public router = Router();
 
   constructor(force: boolean = false) {
@@ -23,29 +23,29 @@ class <% Name %>Controller implements Controller {
   }
 
   private initializeRoutes(): void {
-    this.router.get("/", this.findAll);
+    this.router.get("/", this.findAll.bind(this));
     this.router.post(
       "/",
       validationMiddleware(<% Name %>Request.create),
-      this.create,
+      this.create.bind(this),
     );
     this.router.put(
       "/:id",
       validationMiddleware(<% Name %>Request.update),
-      this.update,
+      this.update.bind(this),
     );
-    this.router.delete("/:id", this.delete);
+    this.router.delete("/:id", this.delete.bind(this));
   }
 
   private createTable(force: boolean) {
-    this.<% name %>.sync({ force });
+    this.<% Name %>.sync({ force });
   }
 
-  private findAll = async (
+  public async findAll(
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | void> => {
+  ): Promise<Response | void> {
     try {
       const { limit, offset, page } = getPagination(req);
       const where = getWhere(req);
@@ -59,7 +59,7 @@ class <% Name %>Controller implements Controller {
         condition.offset = offset;
       }
 
-      const { count, rows: all } = await this.<% name %>.findAndCountAll({
+      const { count, rows: all } = await this.<% Name %>.findAndCountAll({
         where,
         ...condition,
         attributes: <% Name %>Resource.getAll,
@@ -76,25 +76,24 @@ class <% Name %>Controller implements Controller {
         code: 200,
         res,
         data: all,
-        dataName: "<% name %>s",
+        dataName: "<% pluralName %>",
         message: "<% Name %>s were found successfully",
-        meta:
-          page && limit ? getPaginationMetaData(count, page, limit) : undefined,
+        meta: limit ? getPaginationMetaData(count, page, limit) : undefined,
       });
     } catch (error: any) {
-      next(new HttpException(400, "Server error"));
+      next(new HttpException(500, "Server error"));
     }
-  };
+  }
 
-  private update = async (
+  public async update(
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | void> => {
+  ): Promise<Response | void> {
     try {
       const body = req.body;
 
-      const <% name %> = await this.<% name %>.update(body, {
+      const <% name %> = await this.<% Name %>.update(body, {
         where: {
           id: req.params.id,
         },
@@ -109,17 +108,17 @@ class <% Name %>Controller implements Controller {
     } catch (error: any) {
       next(new HttpException(500, error.message));
     }
-  };
+  }
 
-  private create = async (
+  public async create(
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | void> => {
+  ): Promise<Response | void> {
     try {
       const body = req.body;
 
-      const <% name %> = await this.<% name %>.create(body);
+      const <% name %> = await this.<% Name %>.create(body);
 
       responseHandler.createSuccessResponse({
         res,
@@ -130,7 +129,7 @@ class <% Name %>Controller implements Controller {
     } catch (error: any) {
       next(new HttpException(500, error.message));
     }
-  };
+  }
 
   private delete = async (
     req: Request,
@@ -140,7 +139,7 @@ class <% Name %>Controller implements Controller {
     try {
       const id = req.params.id;
 
-      const deleteCount = await this.<% name %>.destroy({
+      const deleteCount = await this.<% Name %>.destroy({
         where: { id },
       });
 

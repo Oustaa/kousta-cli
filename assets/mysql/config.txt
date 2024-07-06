@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize";
-import logger from "../utils/Logger";
+import logger from "@/Utils/Logger";
 
 const { DBHOST, DBUSERNAME, PASSWORD, DBNAME } = process.env;
 

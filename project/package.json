@@ -39,9 +39,15 @@
     "typescript": "^5.4.5"
   },
   "_moduleAliases": {
-    "@/resources": "dist/resources",
-    "@/utils": "dist/utils",
-    "@/middleware": "dist/middleware",
-    "@/database": "dist/database"
+    "@/App": "dist/App",
+    "@/Http": "dist/Http",
+    "@/Models": "dist/App/Models",
+    "@/Middleware": "dist/App/Http/Middleware",
+    "@/Controllers": "dist/App/Http/Controllers",
+    "@/Resources": "dist/App/Http/Resources",
+    "@/Requests": "dist/App/Http/Requests",
+    "@/Utils": "dist/utils",
+    "@/Database": "dist/database",
+    "@/Routes": "dist/Routes"
   }
 }

@@ -1,11 +1,11 @@
-import 'dotenv/config';
-import 'module-alias/register';
-import http from 'node:http';
-import APP from './app';
-import validateEnv from './utils/validateEnv';
-import logger from './utils/Logger';
-import appRoutes from "./Routes";
+import "dotenv/config";
+import "module-alias/register";
+import http from "node:http";
 
+import APP from "./app";
+import validateEnv from "@/Utils/validateEnv";
+import logger from "@/Utils/Logger";
+import appRoutes from "@/Routes/index";
 
 validateEnv();
 
