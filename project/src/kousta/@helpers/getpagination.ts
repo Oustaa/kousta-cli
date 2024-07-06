@@ -33,6 +33,10 @@ export function getPaginationMetaData(
   page: number,
   limit: number,
 ): PaginationMetaData {
+  if (!page) {
+    page = 1;
+  }
+
   const pages = Math.ceil(count / limit);
 
   return {
