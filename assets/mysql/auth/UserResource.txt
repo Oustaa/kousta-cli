@@ -1,0 +1,6 @@
+const UserResource = {};
+
+export default UserResource as Record<
+  keyof typeof UserResource,
+  (string | [string, string])[]
+>;

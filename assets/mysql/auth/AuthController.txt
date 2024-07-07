@@ -1,0 +1,160 @@
+import { hash, compare } from "bcrypt";
+import jwt from "jsonwebtoken";
+import { Router, Request, Response, NextFunction } from "express";
+import Controller from "@/Utils/interfaces/Controller.interface";
+import HttpException from "@/Utils/exceptions/http.exception";
+import validationMiddleware from "@/Middleware/validation.middleware";
+import AuthRequest from "@/Requests/AuthRequest";
+import UserModel from "@/Models/UserModel";
+import responseHandler from "@/Utils/ResponseHandler";
+import UserResource from "@/Resources/UserResource";
+import { Op } from "sequelize";
+
+class AuthController implements Controller {
+  private User = UserModel;
+  // private RestorePassword = UserModel;
+  public path = "/auth";
+  public router = Router();
+
+  constructor(force: boolean = false) {
+    this.initializeRoutes();
+    this.createTable(force);
+  }
+
+  private initializeRoutes(): void {
+    this.router.post(
+      "/signin",
+      validationMiddleware(AuthRequest.signIn),
+      this.signin.bind(this),
+    );
+
+    this.router.post(
+      "/login",
+      validationMiddleware(AuthRequest.login),
+      this.login.bind(this),
+    );
+
+    this.router.get("/verifyUsername", this.verifyUsername.bind(this));
+
+    this.router.get("/verifyToken", this.verifyToken.bind(this));
+  }
+
+  private createTable(force: boolean) {
+    this.User.sync({ force });
+  }
+
+  private async verifyUsername(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const username = req.query.username as string;
+      console.log(req.query);
+
+      if (!username) {
+        return res.status(400).send({
+          message: "Missing username parameter",
+        });
+      }
+
+      const user = await this.User.findOne({
+        where: { username },
+      });
+
+      if (user) {
+        return res.status(409).send({
+          isValid: false,
+        });
+      }
+
+      return res.status(200).send({
+        isValid: true,
+      });
+    } catch (error) {
+      next(new HttpException(500, "Server error"));
+    }
+  }
+
+  private async signin(req: Request, res: Response, next: NextFunction) {
+    try {
+      const hashedPassword = await hash(req.body.password, 10);
+
+      const [, isCreated] = await this.User.findOrCreate({
+        where: {
+          email: req.body.email,
+          username: req.body.username,
+        },
+        defaults: { ...req.body, password: hashedPassword },
+      });
+
+      if (isCreated) {
+        return responseHandler.createSuccessResponse({
+          res,
+          message: "User created successfully.",
+        });
+      }
+
+      return responseHandler.createSuccessResponse({
+        res,
+        message: "the email or username is already in use.",
+      });
+    } catch (error: any) {
+      next(new HttpException(500, "Server error"));
+    }
+  }
+
+  private async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = await this.User.findOne({
+        where: {
+          [Op.or]: {
+            email: req.body.login,
+            username: req.body.login,
+          },
+        },
+      });
+
+      if (user) {
+        const isMatch = await compare(req.body.password, user.password);
+        console.log({ isMatch });
+        if (isMatch) {
+          const token = jwt.sign(
+            { userId: user.id },
+            process.env.ACCESS_TOKEN!,
+            { expiresIn: "7d" },
+          );
+
+          return responseHandler.sendSuccessResponse({
+            res,
+            message: "Login successful.",
+            code: 200,
+            data: { token },
+          });
+        }
+      }
+
+      return responseHandler.sendErrorResponse(res, 401);
+    } catch (error: any) {
+      next(new HttpException(500, "Server error"));
+    }
+  }
+
+  // this must be a middleware with adding the posibility of role base authentication
+  private async verifyToken(req: Request, res: Response, next: NextFunction) {
+    let token = req.headers["authorization"];
+
+    if (token) {
+      token = token.substring(7);
+      const user = await jwt.verify(token, process.env.ACCESS_TOKEN!);
+
+      if (user) {
+        res.user = user;
+      }
+    }
+
+    next();
+  }
+}
+
+export default AuthController;

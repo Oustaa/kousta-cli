@@ -1,0 +1,29 @@
+import Joi from "joi";
+
+class UserRequest {
+  public static signIn = Joi.object({
+    username: Joi.string().min(3).required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(8).required(),
+    verifyPassword: Joi.string()
+      .valid(Joi.ref("password"))
+      .required()
+      .messages({
+        "any.only": "Passwords do not match",
+      }),
+    email_verified: Joi.forbidden(),
+  });
+
+  public static login = Joi.object({
+    login: Joi.string().email().required(),
+    password: Joi.string().min(8).required(),
+  });
+
+  public static update = Joi.object({
+    username: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(8).required(),
+  });
+}
+
+export default UserRequest;

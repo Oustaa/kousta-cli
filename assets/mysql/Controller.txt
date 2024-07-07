@@ -10,7 +10,7 @@ import {
   getWhere,
   getPagination,
   getPaginationMetaData,
-} from "../../../kousta/@utils";
+} from "../../../kousta/@helpers";
 
 class <% Name %>Controller implements Controller {
   private <% Name %> = <% Name %>Model;

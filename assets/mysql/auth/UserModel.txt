@@ -1,0 +1,60 @@
+import { Model, DataTypes, Optional } from "sequelize";
+import { db } from "@/Database/config";
+
+export interface UserAttributes {
+  id?: number;
+  username: string;
+  password: string;
+  email: string;
+  email_verified: boolean;
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface UserCreationAttributes
+  extends Optional<UserAttributes, "id"> {}
+
+export interface UserInstance
+  extends Model<UserAttributes, UserCreationAttributes>,
+    UserAttributes {}
+
+const UserModel = db.define<UserInstance>(
+  "User",
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    email_verified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+  },
+  {
+    timestamps: true,
+    tableName: "users",
+  }
+);
+
+export default UserModel;
+
