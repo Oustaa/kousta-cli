@@ -1,0 +1,1 @@
+npm i bcrypt jsonwebtoken && npm i -d @types/bcrypt @types/jsonwebtoken 

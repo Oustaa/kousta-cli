@@ -8,6 +8,7 @@ export interface UserAttributes {
   email: string;
   email_verified: boolean;
   isActive?: boolean;
+  profile_image: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -49,12 +50,15 @@ const UserModel = db.define<UserInstance>(
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
+    profile_image: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,
     tableName: "users",
-  }
+  },
 );
 
 export default UserModel;
-

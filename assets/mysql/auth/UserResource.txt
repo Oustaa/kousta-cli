@@ -1,4 +1,13 @@
-const UserResource = {};
+const UserResource = {
+  getOne: [
+    "id",
+    "username",
+    "email",
+    "email_verified",
+    "createdAt",
+    "profile_image",
+  ],
+};
 
 export default UserResource as Record<
   keyof typeof UserResource,

@@ -36,7 +36,7 @@ class AuthController implements Controller {
 
     this.router.get("/verifyUsername", this.verifyUsername.bind(this));
 
-    this.router.get("/verifyToken", this.verifyToken.bind(this));
+    this.router.get("/getProfile", this.getProfile.bind(this));
   }
 
   private createTable(force: boolean) {
@@ -117,13 +117,10 @@ class AuthController implements Controller {
 
       if (user) {
         const isMatch = await compare(req.body.password, user.password);
-        console.log({ isMatch });
         if (isMatch) {
-          const token = jwt.sign(
-            { userId: user.id },
-            process.env.ACCESS_TOKEN!,
-            { expiresIn: "7d" },
-          );
+          const token = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN!, {
+            expiresIn: "7d",
+          });
 
           return responseHandler.sendSuccessResponse({
             res,
@@ -136,24 +133,36 @@ class AuthController implements Controller {
 
       return responseHandler.sendErrorResponse(res, 401);
     } catch (error: any) {
+      console.log(error);
       next(new HttpException(500, "Server error"));
     }
   }
 
-  // this must be a middleware with adding the posibility of role base authentication
-  private async verifyToken(req: Request, res: Response, next: NextFunction) {
-    let token = req.headers["authorization"];
+  private async getProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = req.user?.id;
 
-    if (token) {
-      token = token.substring(7);
-      const user = await jwt.verify(token, process.env.ACCESS_TOKEN!);
+      console.log(req.user);
 
-      if (user) {
-        res.user = user;
+      const user = await this.User.findOne({
+        where: { id },
+        attributes: UserResource.getOne,
+      });
+
+      if (!user) {
+        return responseHandler.notFoundError(res, "User");
       }
-    }
 
-    next();
+      return responseHandler.sendSuccessResponse({
+        res,
+        message: "User profile fetched successfully.",
+        data: user,
+        dataName: "user",
+      });
+    } catch (error) {
+      console.log(error);
+      next(new HttpException(500, "Server error"));
+    }
   }
 }
 
