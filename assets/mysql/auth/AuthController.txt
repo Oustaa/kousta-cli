@@ -9,6 +9,7 @@ import UserModel from "@/Models/UserModel";
 import responseHandler from "@/Utils/ResponseHandler";
 import UserResource from "@/Resources/UserResource";
 import { Op } from "sequelize";
+import { isAuthorised } from "../../../kousta/@middlewares";
 
 class AuthController implements Controller {
   private User = UserModel;
@@ -138,6 +139,7 @@ class AuthController implements Controller {
     }
   }
 
+  @isAuthorised
   private async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.user?.id;
